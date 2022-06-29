@@ -33,6 +33,11 @@ namespace cepsplugin{
 template <typename T> T get_key(T v) {return v;}
 int get_key(int* v) {return *v;}
 
+int get_key(ceps::ast::node_t v) {
+    using namespace ceps::ast;
+    return value(as_int_ref(v));
+}
+
 template <typename T>
 void insertion_sort(T& v){
 	for(ssize_t i = 1; i < (ssize_t)v.size(); ++i){
@@ -44,8 +49,6 @@ void insertion_sort(T& v){
 	}
 }
 
-
-
 ceps::ast::node_t cepsplugin::insertion_sort(ceps::ast::node_callparameters_t params){
     using namespace std;
     using namespace ceps::ast;
@@ -53,25 +56,12 @@ ceps::ast::node_t cepsplugin::insertion_sort(ceps::ast::node_callparameters_t pa
     auto data = get_first_child(params);    
     if (!is<Ast_node_kind::structdef>(data)) return nullptr;
     auto& ceps_struct = *as_struct_ptr(data);
-    cout << ceps_struct << '\n';
 
+    auto v1 = children(ceps_struct);
 
-    vector<int> v1 = {5,4,3,2,1};
     ::insertion_sort(v1);
-    for( auto e: v1)
-        cout << e << ' ';
-    cout << '\n';
 
-    auto one = 1;
-    auto four = 4;
-    auto five = 5;
-    auto two = 2;
-    auto three = 3;
-
-    vector<int*> v2 = {&five,&four,&three,&two,&one};
-    ::insertion_sort(v2);
-
-    auto result = mk_struct("result");
+    auto result = mk_struct("result",v1);
     return result;
 }
 
