@@ -1,4 +1,4 @@
-INSERT_NAME_FOR_FUNCTION_HERE(
+insertion_sort(
 	input{
 		123;
 		"abc";

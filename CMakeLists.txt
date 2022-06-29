@@ -1,6 +1,6 @@
 
 cmake_minimum_required(VERSION 3.10)
-project(INSERT_PROJECT_NAME_HERE)
+project(sorting_algorithms_and_memory_caches)
 
 add_compile_options(-O  -Wall -MD  -std=c++2a  -fPIC -static -Wno-undef )
 
@@ -26,8 +26,8 @@ include_directories(../include)
 
 link_directories($ENV{CEPSCORE}/bin)
 
-add_library(INSERT_PLUGIN_NAME_HERE SHARED 
+add_library(sorting_algorithms SHARED 
            plugin-entrypoint.cpp 
            )
 
-target_link_libraries(INSERT_PLUGIN_NAME_HERE cepscore)					
+target_link_libraries(sorting_algorithms cepscore)					
