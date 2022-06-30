@@ -1,8 +1,15 @@
 
-for( e : root.data.content()){ 
-	insertion_sort(
-		input{
-			e.content();
-		}
-	);
+label summary title="Test Results";
+
+for( e : root.test) { 
+	val r = insertion_sort(e.input);
+	val verdicts = e.expectation.predicate(r);
+	for( ex : e.expectation){
+		val verdict = ex.predicate(r);
+		comment{ex.description.content();":  ";};
+		if (as_int(verdict))
+		 label passed title="Passed" type = "check";
+		else
+		 label failed title="Failed" type = "error";
+	} 
 }

@@ -1,5 +1,15 @@
-data{
-	test{5;4;3;2;1;};
-	test{4;5;3;2;1;};
-	test{for(e: 1 .. 100) {100-e+1;}};
+test{
+	input{5;4;3;2;1;};
+	expectation{
+		description{"First element of result should be 6";};
+		macro predicate initial=""{
+			(arglist.result.content().at(0) # "First element of result") == 6;
+		};
+	};
+	expectation{
+		description{"Second element of result should be 2";};
+		macro predicate initial="" {
+			(arglist.result.content().at(1) # "Second element of result") == 2;
+		};
+	};
 };

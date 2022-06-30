@@ -3,5 +3,5 @@
 
 LD_LIBRARY_PATH=$(pwd)/bin:$LD_LIBRARY_PATH ceps \
  $1 $2 \
- --pluginlibsorting_algorithms.so --ppe	--format ansi					
+ --pluginlibsorting_algorithms.so --ppe	--format markdown_github					
 					
