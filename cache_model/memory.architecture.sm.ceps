@@ -10,6 +10,8 @@ Systemstate MemPageInL1Cache,MemPageRequested;
 MemPageInL1Cache = 0;
 MemPageRequested = 0;
 
+Event L1CacheMiss;
+
 sm{
     L1Cache;
     states{Initial;};
@@ -23,7 +25,7 @@ sm{
                 {
                     CheckPageAvailable;
                 }
-                print(MemPageRequested,"\n");
+                //print(MemPageRequested,"\n");
             };
         };
         t{Initial;Idle;};
@@ -33,21 +35,60 @@ sm{
     sm{
         Controller;
         states{Initial;Idle;CheckPageInCache;};
+        Actions{
+            doCheckPageAvailable{
+                if(MemPageInL1Cache != MemPageRequested ){
+                    MemPageInL1Cache = MemPageRequested;
+                    L1CacheMiss;
+                }
+            };
+        };
         t{Initial;Idle;};
-        t{Idle;CheckPageInCache;CheckPageAvailable;};
+        t{Idle;CheckPageInCache;CheckPageAvailable;doCheckPageAvailable;};
         t{CheckPageInCache;Idle;};
     };
     t{Initial;CPUInterface;};
     t{Initial;Controller;};
 };
 
+sm{
+    L1CacheObserver;
+    cover{
+        edges_upto_1;
+    };
+    states{Initial;Miss;};
+    t{Initial;Miss;L1CacheMiss;};
+    t{Miss;Initial;};
+};
+
+Systemstate IP;
+IP = 0;
+val max_steps = 100;
+Event ClockTick;
+
+sm{
+  CPU;
+  states{Initial;Step;};
+  Actions{
+    doIncrementIP{
+        IP = IP + 1;
+    };
+    doAccessMemory{
+        {
+            MemoryAccess(IP);
+        }   
+    };
+    doTick{
+       IP = IP + 1;
+       if (IP < max_steps){
+        start_timer(0.0001*s,ClockTick);
+       }
+    };
+  };
+  t{Initial;Step;doTick;};
+  t{Step;Step;ClockTick;doAccessMemory;doIncrementIP;doTick;};
+};
+
 Simulation{
-    Start{L1Cache;};
-    {
-     MemoryAccess(0);
-     MemoryAccess(1);
-     MemoryAccess(2);
-     MemoryAccess(3);
-     MemoryAccess(4);
-    }
+    Start{L1Cache;CPU;L1CacheObserver;};
 };
