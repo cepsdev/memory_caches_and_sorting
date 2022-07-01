@@ -66,6 +66,16 @@ IP = 0;
 val max_steps = 100;
 Event ClockTick;
 
+mem_access_list{
+ for( i : 0 .. max_steps){
+    i;
+ }
+};
+
+Systemstate mem_location, mem_locations; 
+mem_location = 0;
+mem_locations = root.mem_access_list.content();
+
 sm{
   CPU;
   states{Initial;Step;};
@@ -75,12 +85,13 @@ sm{
     };
     doAccessMemory{
         {
-            MemoryAccess(IP);
+            MemoryAccess(mem_location);
         }   
     };
     doTick{
        IP = IP + 1;
-       if (IP < max_steps){
+       if (IP < root.mem_access_list.content().size()){
+        mem_location = mem_locations.at(IP); 
         start_timer(0.0001*s,ClockTick);
        }
     };
