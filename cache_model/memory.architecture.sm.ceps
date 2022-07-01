@@ -1,0 +1,18 @@
+kind Event;
+Event MemoryAccess;
+
+sm{
+    L1Cache;
+    states{Initial;};
+    sm{
+        CPUInterface;
+        states{Initial;};
+    };
+    sm{
+        Controller;
+        states{Initial;};
+    };
+    t{Initial;CPUInterface;};
+    t{Initial;Controller;};
+};
+
