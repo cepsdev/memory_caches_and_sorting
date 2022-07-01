@@ -2,7 +2,13 @@ kind Event;
 Event MemoryAccess;
 Event CheckPageAvailable;
 
+val MemPageSize = 4;
 
+kind Systemstate;
+Systemstate MemPageInL1Cache,MemPageRequested;
+
+MemPageInL1Cache = 0;
+MemPageRequested = 0;
 
 sm{
     L1Cache;
@@ -12,7 +18,9 @@ sm{
         states{Initial;Idle;MemoryAccessRequestReceived;};
         Actions{
             doCheckPageLoaded{
-                print("\n\n","doCheckPageLoaded:",argv(0),"\n\n");
+                print("\n\n","doCheckPageLoaded:",argv(1),"\n\n");
+                MemPageRequested = argv(1) / MemPageSize;
+                print(MemPageRequested,"\n");
             };
         };
         t{Initial;Idle;};
@@ -29,5 +37,11 @@ sm{
 
 Simulation{
     Start{L1Cache;};
-    MemoryAccess;
+    {
+     MemoryAccess(0);
+     MemoryAccess(1);
+     MemoryAccess(2);
+     MemoryAccess(3);
+     MemoryAccess(4);
+    }
 };
