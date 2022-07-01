@@ -18,8 +18,11 @@ sm{
         states{Initial;Idle;MemoryAccessRequestReceived;};
         Actions{
             doCheckPageLoaded{
-                print("\n\n","doCheckPageLoaded:",argv(1),"\n\n");
+                //print("\n\n","doCheckPageLoaded:",argv(1),"\n\n");
                 MemPageRequested = argv(1) / MemPageSize;
+                {
+                    CheckPageAvailable;
+                }
                 print(MemPageRequested,"\n");
             };
         };
@@ -29,7 +32,10 @@ sm{
     };
     sm{
         Controller;
-        states{Initial;};
+        states{Initial;Idle;CheckPageInCache;};
+        t{Initial;Idle;};
+        t{Idle;CheckPageInCache;CheckPageAvailable;};
+        t{CheckPageInCache;Idle;};
     };
     t{Initial;CPUInterface;};
     t{Initial;Controller;};
