@@ -1,12 +1,23 @@
 kind Event;
 Event MemoryAccess;
+Event CheckPageAvailable;
+
+
 
 sm{
     L1Cache;
     states{Initial;};
     sm{
         CPUInterface;
-        states{Initial;};
+        states{Initial;Idle;MemoryAccessRequestReceived;};
+        Actions{
+            doCheckPageLoaded{
+                print("\n\n","doCheckPageLoaded:",argv(0),"\n\n");
+            };
+        };
+        t{Initial;Idle;};
+        t{Idle;MemoryAccessRequestReceived;MemoryAccess;doCheckPageLoaded;};
+        t{MemoryAccessRequestReceived;Idle;};
     };
     sm{
         Controller;
@@ -16,3 +27,7 @@ sm{
     t{Initial;Controller;};
 };
 
+Simulation{
+    Start{L1Cache;};
+    MemoryAccess;
+};
