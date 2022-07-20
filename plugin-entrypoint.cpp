@@ -30,6 +30,27 @@ namespace cepsplugin{
 
 
 
+
+///////////////////////////////
+///////////////////////////////
+///////////////////////////////
+
+using namespace std;
+using namespace ceps::ast;
+
+struct logger{
+    vector<node_t> v;
+    vector<node_t>& log;
+    logger(vector<node_t> v, vector<node_t>& log) : v{v},log{log} { }
+    size_t size() const {return v.size();}
+    
+    node_t& operator[] (size_t i) {
+        log.push_back(ceps::interpreter::mk_int_node(i));
+        return v[i]; 
+    } 
+};
+
+
 template <typename T> T get_key(T v) {return v;}
 int get_key(int* v) {return *v;}
 
@@ -38,19 +59,15 @@ int get_key(ceps::ast::node_t v) {
     return value(as_int_ref(v));
 }
 
-template <typename T1, typename T2>
-void insertion_sort(T1& v, T2& mem_access){
-	for(ssize_t i = 1; i < (ssize_t)v.size(); ++i){
+template <typename T1>
+void insertion_sort(T1& v){
+	for(ssize_t i = 1; i < v.size(); ++i){
 		auto elem_to_insert = v[i];
-        mem_access.push_back(ceps::interpreter::mk_int_node(i));
 		auto j = i - 1;
 		for(;j >= 0 && get_key(v[j]) > get_key(elem_to_insert); --j){
-            mem_access.push_back(ceps::interpreter::mk_int_node(j));
-            mem_access.push_back(ceps::interpreter::mk_int_node(j+1));
 			v[j + 1] = v[j];
         }
 		v[j + 1] = elem_to_insert;
-        mem_access.push_back(ceps::interpreter::mk_int_node(j+1));
 	}
 }
 
@@ -63,9 +80,10 @@ ceps::ast::node_t cepsplugin::insertion_sort(ceps::ast::node_callparameters_t pa
     auto& ceps_struct = *as_struct_ptr(data);
     auto v1 = children(ceps_struct);
 
-    vector<node_t> mem_access;
-
-    ::insertion_sort(v1,mem_access);
+    vector<node_t> mem_access;    
+    auto input = logger{v1,mem_access};
+    
+    ::insertion_sort(input);
 
     auto result = mk_struct("result",
                             {mk_struct("output", v1),
