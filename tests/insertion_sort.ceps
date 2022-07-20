@@ -1,0 +1,10 @@
+insertion_sort(input{
+ 10;9;8;7;6;5;4;3;2;1;   
+});
+
+Simulation{
+    Start{L1Cache;};
+    for(e : root.result.mem_access.content() ){
+        MemoryAccess(e);
+    }
+};

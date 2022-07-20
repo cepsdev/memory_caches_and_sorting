@@ -1,0 +1,8 @@
+Simulation{
+    Start{L1Cache;};
+    MemoryAccess(0);
+    MemoryAccess(10);
+    MemoryAccess(100);
+    MemoryAccess(1000);
+    MemoryAccess(10000);
+};

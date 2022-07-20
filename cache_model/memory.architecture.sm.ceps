@@ -1,14 +1,19 @@
 kind Event;
+kind Systemstate;
+
+
 Event MemoryAccess;
 Event CheckPageAvailable;
-
-val MemPageSize = 4;
-
-kind Systemstate;
 Systemstate MemPageInL1Cache,MemPageRequested;
 
+val MemPageSize = 4;
+comment{" Number of bytes in a single memory page.\n";};
+
 MemPageInL1Cache = 0;
+comment{"\n Flag indicating whether a requested memory position is available from the L1 cache.\n";};
+
 MemPageRequested = 0;
+comment{"\n Index of memory page requested.\n";};
 
 Event L1CacheMiss;
 
@@ -19,14 +24,10 @@ sm{
         CPUInterface;
         states{Initial;Idle;MemoryAccessRequestReceived;};
         Actions{
-            doCheckPageLoaded{
-                //print("\n\n","doCheckPageLoaded:",argv(1),"\n\n");
+            doCheckPageLoaded{{
                 MemPageRequested = argv(1) / MemPageSize;
-                {
-                    CheckPageAvailable;
-                }
-                //print(MemPageRequested,"\n");
-            };
+                CheckPageAvailable(MemPageRequested);                
+            }};
         };
         t{Initial;Idle;};
         t{Idle;MemoryAccessRequestReceived;MemoryAccess;doCheckPageLoaded;};
@@ -37,8 +38,8 @@ sm{
         states{Initial;Idle;CheckPageInCache;};
         Actions{
             doCheckPageAvailable{
-                if(MemPageInL1Cache != MemPageRequested ){
-                    MemPageInL1Cache = MemPageRequested;
+                if(MemPageInL1Cache != argv(1) ){
+                    MemPageInL1Cache = argv(1);
                     L1CacheMiss;
                 }
             };
@@ -61,49 +62,3 @@ sm{
     t{Miss;Initial;};
 };
 
-Systemstate IP;
-IP = 0;
-val max_steps = 1;
-Event ClockTick;
-
-
-
-insertion_sort(input{
- 10;9;8;7;6;5;4;3;2;1;   
-});
-
-mem_access_list{
-    root.result.mem_access.content();
-};
-
-Systemstate mem_location, mem_locations; 
-mem_location = 0;
-mem_locations = root.mem_access_list.content();
-
-sm{
-  CPU;
-  states{Initial;Step;};
-  Actions{
-    doIncrementIP{
-        IP = IP + 1;
-    };
-    doAccessMemory{
-        {
-            MemoryAccess(mem_location);
-        }   
-    };
-    doTick{
-       IP = IP + 1;
-       if (IP < root.mem_access_list.content().size()){
-        mem_location = mem_locations.at(IP); 
-        start_timer(0.0001*s,ClockTick);
-       }
-    };
-  };
-  t{Initial;Step;doTick;};
-  t{Step;Step;ClockTick;doAccessMemory;doIncrementIP;doTick;};
-};
-
-Simulation{
-    Start{L1Cache;CPU;L1CacheObserver;};
-};
