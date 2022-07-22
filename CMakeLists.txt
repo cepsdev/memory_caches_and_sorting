@@ -27,7 +27,8 @@ include_directories(../include)
 link_directories($ENV{CEPSCORE}/bin)
 
 add_library(sorting_algorithms SHARED 
-           plugin-entrypoint.cpp 
+           src/plugin-entrypoint.cpp
+           src/base.cpp
            )
 
 target_link_libraries(sorting_algorithms cepscore)					
