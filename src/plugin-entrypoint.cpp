@@ -67,7 +67,7 @@ ceps::ast::node_t cepsplugin::insertion_sort(ceps::ast::node_callparameters_t pa
     ::insertion_sort(input);
 
     auto result = mk_struct("result",
-                            {mk_struct("output", v1),
+                            {mk_struct("output", input.v),
                             mk_struct("mem_access", mem_access)  });
     return result;
 }
