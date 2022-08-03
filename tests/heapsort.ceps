@@ -1,5 +1,5 @@
-insertion_sort(input{
- 10;9;8;7;6;5;4;3;2;1;   
+heapsort(input{
+ 10;8;9;17;6;5;4;3;2;1;   
 });
 
 Simulation{

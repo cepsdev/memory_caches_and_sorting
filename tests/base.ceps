@@ -1,8 +1,7 @@
-
 label summary title="Test Results";
 
 for( e : root.test) { 
-	val r = insertion_sort(e.input);
+	val r = heapsort(e.input);
 	val verdicts = e.expectation.predicate(r);
 	for( ex : e.expectation){
 		val verdict = ex.predicate(r);

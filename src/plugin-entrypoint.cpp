@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <future>
 #include <netinet/sctp.h> 
+#include <vector>
 
 #include "ceps_ast.hh"
 #include "core/include/state_machine_simulation_core.hpp"
@@ -27,11 +28,8 @@ namespace cepsplugin{
     static Ism4ceps_plugin_interface* plugin_master = nullptr;
     static const std::string version_info = "INSERT_NAME_HERE v0.1";
     static constexpr bool print_debug_info{true};
-    ceps::ast::node_t insertion_sort(ceps::ast::node_callparameters_t params);
+    ceps::ast::node_t heapsort(ceps::ast::node_callparameters_t params);
 }
-
-
-
 
 ///////////////////////////////
 ///////////////////////////////
@@ -52,29 +50,29 @@ struct logger{
     } 
 };
 
-ceps::ast::node_t cepsplugin::insertion_sort(ceps::ast::node_callparameters_t params){
+
+ceps::ast::node_t cepsplugin::heapsort(ceps::ast::node_callparameters_t params){
     using namespace std;
     using namespace ceps::ast;
     using namespace ceps::interpreter;
     auto data = get_first_child(params);    
     if (!is<Ast_node_kind::structdef>(data)) return nullptr;
     auto& ceps_struct = *as_struct_ptr(data);
-    auto v1 = children(ceps_struct);
 
-    vector<node_t> mem_access;    
+    auto v1 = children(ceps_struct);
+    int n = v1.size();
+    vector<node_t> mem_access;
     auto input = logger{v1,mem_access};
-    
-    ::insertion_sort(input);
+    ::heapsort(input,n);
 
     auto result = mk_struct("result",
-                            {mk_struct("output", input.v),
-                            mk_struct("mem_access", mem_access)  });
+                            {mk_struct("output",input.v),
+                            mk_struct("mem_access", mem_access)});
     return result;
 }
 
 extern "C" void init_plugin(IUserdefined_function_registry* smc)
 {
   cepsplugin::plugin_master = smc->get_plugin_interface();
-  cepsplugin::plugin_master->reg_ceps_phase0plugin("insertion_sort",cepsplugin::insertion_sort);
-}					
-				
+  cepsplugin::plugin_master->reg_ceps_phase0plugin("heapsort",cepsplugin::heapsort);
+}			
